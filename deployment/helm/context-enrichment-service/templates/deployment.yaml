@@ -1,0 +1,130 @@
+{{/* Check required values and define variables */}}
+{{- $dockerRepository := .Values.required.image.repository | required ".Values.required.image.repository is required." -}}
+{{- $dockerImage := .Values.required.image.name | required ".Values.required.image.name is required." -}}
+{{- $dockerTag := .Values.required.image.tag | default .Chart.AppVersion -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "context-enrichment-service.fullversionname" . }}
+  labels:
+    {{- include "context-enrichment-service.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "context-enrichment-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "context-enrichment-service.selectorLabels" . | nindent 8 }}
+        {{- include "context-enrichment-service.deploymentLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: 
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "context-enrichment-service.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      # Add writable volumes
+      volumes:
+        - name: tmp-volume
+          emptyDir: { }
+        {{- if .Values.debug.enable }}
+        - name: jfr-volume
+          emptyDir: { }
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ $dockerRepository }}/{{ $dockerImage }}:{{ $dockerTag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }} 
+          {{- /* If entrypoint and parameters are both defined, configure them */ -}}
+          {{- if .Values.application.entrypoint }}
+          {{- if .Values.application.parameters }}
+          {{- with .Values.application.entrypoint }}
+          command: 
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.application.parameters }}
+          args: 
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          # Set the Environment Variables for the container
+          env:
+            - name: "TZ"
+              value: "Europe/Berlin"
+            {{- if .Values.debug.enable }}
+            - name: "JAVA_TOOL_OPTIONS"
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000"
+            {{- end }}
+          # Mount Volumes in container
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+          {{- if .Values.debug.enable }}
+            - name: jfr-volume
+              mountPath: /jfrdump
+          {{- end }}
+          # Ports to be exposed from the container
+          ports:
+            - name: ces-port
+              containerPort: 8080
+              protocol: TCP
+            {{- if .Values.debug.enable }}
+            - name: ces-debug
+              containerPort: 9000
+              protocol: TCP
+            {{- end }}
+          # Performs checks to verify that the application is successfully started
+          # The Application is marked as failed after periodSeconds*failureThreshold seconds
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: ces-port
+            failureThreshold: 10
+            periodSeconds: 30
+          # Use SpringBoot Actuator Liveness Check
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: ces-port
+            failureThreshold: 3
+            periodSeconds: 30
+          # Use SpringBoot Actuator Readiness Check
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: ces-port
+            failureThreshold: 5
+            periodSeconds: 10
+          {{- with .Values.resources }}
+          # Define Limits and Requested Resources (CPU/RAM)
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

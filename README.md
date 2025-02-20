@@ -1,1 +1,0 @@
-# DEMIS-context-enrichment-service

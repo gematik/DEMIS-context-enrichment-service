@@ -40,16 +40,13 @@ package de.gematik.demis.context.enrichment.service.utils.fhir;
  * #L%
  */
 
-import static de.gematik.demis.context.enrichment.service.exceptions.ErrorCode.INVALID_COMPOSITION_ID;
 import static java.util.Objects.isNull;
 
-import de.gematik.demis.context.enrichment.service.exceptions.CesServiceException;
 import de.gematik.demis.notification.builder.demis.fhir.notification.builder.technicals.InitializableFhirObjectBuilder;
 import de.gematik.demis.notification.builder.demis.fhir.notification.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -111,21 +108,7 @@ public class ProvenanceBuilder implements InitializableFhirObjectBuilder {
   }
 
   private List<Reference> getTarget() {
-    checkTargetCompositionId();
-    if (targetCompositionId.startsWith(COMPOSITION_PREFIX)) {
-      return List.of(new Reference(targetCompositionId));
-    }
     return List.of(new Reference(COMPOSITION_PREFIX + targetCompositionId));
-  }
-
-  private void checkTargetCompositionId() {
-    try {
-      UUID.fromString(this.targetCompositionId);
-    } catch (IllegalArgumentException e) {
-      log.error("Invalid composition id: {}", this.targetCompositionId);
-      throw new CesServiceException(
-          INVALID_COMPOSITION_ID, "Invalid composition id: " + this.targetCompositionId);
-    }
   }
 
   private Meta getMeta() {

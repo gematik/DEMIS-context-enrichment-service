@@ -1,4 +1,4 @@
-<img align="right" width="250" height="47" src="../media/Gematik_Logo_Flag.png"/> <br/>
+<img align="right" width="250" height="47" src="media/Gematik_Logo_Flag.png"/> <br/>
 
 
 # Context-Enrichment-Service (CES)
@@ -51,7 +51,7 @@ RKI and health offices can better assess the credibility of the notifications re
 [![Quality gate](https://sonar.prod.ccs.gematik.solutions/api/project_badges/quality_gate?project=de.gematik.demis%3Acontext-enrichment-service&token=sqb_b12c386a101bc2aecab21ec6ceffd41f9d8598b8)](https://sonar.prod.ccs.gematik.solutions/dashboard?id=de.gematik.demis%3Acontext-enrichment-service)
 
 ### Release Notes
-See [ReleaseNotes](../ReleaseNotes.md) for all information regarding the (newest) releases.
+See [ReleaseNotes](ReleaseNotes.md) for all information regarding the (newest) releases.
 
 ## Getting Started
 The application can be executed from a mvn command file or a Docker Image.
@@ -85,10 +85,10 @@ Subsequently we list the endpoints provided by the Context-Enrichment-Service.
 
 
 ## Security Policy
-If you want to see the security policy, please check our [SECURITY.md](SECURITY.md).
+If you want to see the security policy, please check our [SECURITY.md](.github/SECURITY.md).
 
 ## Contributing
-If you want to contribute, please check our [CONTRIBUTING.md](CONTRIBUTING.md).
+If you want to contribute, please check our [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## License
 EUROPEAN UNION PUBLIC LICENCE v. 1.2
@@ -97,7 +97,7 @@ EUPL © the European Union 2007, 2016
 
 Copyright (c) 2023 gematik GmbH
 
-See [LICENSE](../LICENSE.md).
+See [LICENSE](LICENSE.md).
 
 ## Contact
 E-Mail to [DEMIS Entwicklung](mailto:demis-entwicklung@gematik.de?subject=[GitHub]%20Context-Enrichment-Service)

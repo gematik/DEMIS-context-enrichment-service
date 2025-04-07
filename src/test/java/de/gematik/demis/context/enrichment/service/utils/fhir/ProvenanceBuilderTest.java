@@ -40,10 +40,8 @@ package de.gematik.demis.context.enrichment.service.utils.fhir;
  * #L%
  */
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
-import de.gematik.demis.context.enrichment.service.exceptions.CesServiceException;
 import lombok.SneakyThrows;
 import org.hl7.fhir.r4.model.Provenance;
 import org.junit.jupiter.api.Test;
@@ -85,11 +83,11 @@ class ProvenanceBuilderTest {
         COMPOSITION_ID_WITH_COMPOSITION
       })
   @SneakyThrows
-  void shouldThrowExceptionIfCompositionIdNotCorrect(String invalidCompositionId) {
+  void createCompositionRightEvenIfCompositionIdUnlikeUUID(String compositionIdUnlikeUUID) {
     ProvenanceBuilder provenanceBuilder = new ProvenanceBuilder();
-    provenanceBuilder.setTargetCompositionId(invalidCompositionId);
-    assertThatThrownBy(provenanceBuilder::build)
-        .isInstanceOf(CesServiceException.class)
-        .hasMessageContaining("Invalid composition id: " + invalidCompositionId);
+    provenanceBuilder.setTargetCompositionId(compositionIdUnlikeUUID);
+    Provenance provenance = provenanceBuilder.build();
+    assertThat(provenance.getTarget().getFirst().getReference())
+        .isEqualTo("Composition/" + compositionIdUnlikeUUID);
   }
 }

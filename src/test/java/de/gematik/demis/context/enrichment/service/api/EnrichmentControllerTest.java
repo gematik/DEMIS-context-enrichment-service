@@ -106,4 +106,16 @@ class EnrichmentControllerTest {
                 .header(AUTHORIZATION, "Bearer token"))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  @SneakyThrows
+  void sendRequestWithEmptyBodyAndExpectError400() {
+    mockMvc
+        .perform(
+            post("/enrichment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("")
+                .header(AUTHORIZATION, "Bearer token"))
+        .andExpect(status().is(400));
+  }
 }

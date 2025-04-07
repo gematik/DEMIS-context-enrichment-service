@@ -42,6 +42,7 @@ package de.gematik.demis.context.enrichment.service.config;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.gematik.demis.fhirparserlibrary.FhirParser;
+import de.gematik.demis.service.base.apidoc.EnableDefaultApiSpecConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,7 @@ import org.springframework.web.context.annotation.RequestScope;
 /** Configuration for CES creating needed beans */
 @Slf4j
 @Configuration
+@EnableDefaultApiSpecConfig
 public class CesConfig {
 
   @Bean

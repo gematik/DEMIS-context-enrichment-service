@@ -103,11 +103,10 @@ service:
 # Resources
 resources:
   limits:
-    cpu: "1000m"
-    memory: "1Gi"
+    memory: "500Mi"
   requests:
-    cpu: "200m"
-    memory: "1Gi"
+    cpu: "50m"
+    memory: "500Mi"
 
 autoscaling:
   enabled: false

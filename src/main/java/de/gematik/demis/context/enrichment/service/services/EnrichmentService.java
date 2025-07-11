@@ -37,6 +37,10 @@ package de.gematik.demis.context.enrichment.service.services;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
@@ -47,6 +51,7 @@ import static de.gematik.demis.context.enrichment.service.services.EnrichmentSer
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_SOURCE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ISS;
 
+import com.apicatalog.jsonld.StringUtils;
 import de.gematik.demis.context.enrichment.service.services.strategies.BundIdIdpStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.CertificateStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.GematikIdpStrategy;
@@ -62,6 +67,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EnrichmentService {
 
+  public static final String PORTAL_REALM_NAME = "PORTAL";
+  public static final String TOKEN_EXCHANGE_REALM_NAME = "INSTITUTIONS-TI";
+  public static final String HOSPITAL_REALM_NAME = "HOSPITAL";
+  public static final String LAB_REAM_NAME = "LAB";
   private final GematikIdpStrategy gematikIdpStrategy;
   private final CertificateStrategy certificateStrategy;
   private final BundIdIdpStrategy bundIdIdpStrategy;
@@ -85,21 +94,37 @@ public class EnrichmentService {
   }
 
   private AccessTokenType getTypeOfToken(Map<String, Object> claims) {
-    if (!claims.containsKey(ISS.getName())) {
-      throw new IllegalArgumentException("Missing values for claims: " + ISS);
+    if (checkIssuerIsPresent(claims)) {
+      throw new IllegalArgumentException("Missing or null value for claim: " + ISS.getName());
     }
-    if (claims.get(ISS.getName()).toString().endsWith("PORTAL")) {
-      return claims.get(ACCOUNT_SOURCE.getName()).toString().equals("gematik")
-          ? AUTHENTICATOR_TOKEN
-          : BUNDID_TOKEN;
+    String realmName = getRealmNameFromIssuer(claims);
+    return switch (realmName) {
+      case PORTAL_REALM_NAME -> handlePortalRealm(claims);
+      case TOKEN_EXCHANGE_REALM_NAME -> AUTHENTICATOR_TOKEN;
+      case HOSPITAL_REALM_NAME -> HOSPITAL_TOKEN;
+      case LAB_REAM_NAME -> LAB_TOKEN;
+      default -> throw new IllegalArgumentException("Unknown token issuer: " + realmName);
+    };
+  }
+
+  private AccessTokenType handlePortalRealm(Map<String, Object> claims) {
+    String accountSource = (String) claims.get(ACCOUNT_SOURCE.getName());
+    if (StringUtils.isBlank(accountSource)) {
+      throw new IllegalArgumentException(
+          "Missing or null value for claim: " + ACCOUNT_SOURCE.getName());
     }
-    if (claims.get(ISS.getName()).toString().endsWith("HOSPITAL")) {
-      return HOSPITAL_TOKEN;
-    }
-    if (claims.get(ISS.getName()).toString().endsWith("LAB")) {
-      return LAB_TOKEN;
-    }
-    throw new IllegalArgumentException("Unknown token issuer");
+    return accountSource.equals("gematik") ? AUTHENTICATOR_TOKEN : BUNDID_TOKEN;
+  }
+
+  private static boolean checkIssuerIsPresent(Map<String, Object> claims) {
+    return !claims.containsKey(ISS.getName())
+        || claims.get(ISS.getName()) == null
+        || claims.get(ISS.getName()).toString().isEmpty();
+  }
+
+  private static String getRealmNameFromIssuer(Map<String, Object> claims) {
+    String value = claims.get(ISS.getName()).toString();
+    return value.substring(value.lastIndexOf("/") + 1);
   }
 
   enum AccessTokenType {

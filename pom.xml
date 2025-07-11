@@ -4,11 +4,11 @@
   <parent>
     <groupId>de.gematik.demis</groupId>
     <artifactId>spring-parent</artifactId>
-    <version>2.7.2</version>
+    <version>2.12.0</version>
     <relativePath></relativePath><!-- lookup parent from repository -->
   </parent>
   <artifactId>context-enrichment-service</artifactId>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>context-enrichment-service</name>
   <packaging>jar</packaging>
   <description>Service to enrich context informations</description>
@@ -21,7 +21,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>21</java.version>
-    <notification-builder-library.version>3.2.0</notification-builder-library.version>
+    <notification-builder-library.version>${notification.builder.version}</notification-builder-library.version>
   </properties>
   <dependencies>
     <dependency>
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.instancio</groupId>
       <artifactId>instancio-junit</artifactId>
-      <version>5.4.0</version>
+      <version>5.4.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>

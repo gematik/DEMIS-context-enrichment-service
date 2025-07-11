@@ -37,12 +37,22 @@ package de.gematik.demis.context.enrichment.service.services;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.RPS_BUNDLE_COMPOSITION_ID;
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.AUTHENTICATOR;
+import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.INVALID_ISSUER;
+import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.MISSING_ACCOUNT_SOURCE;
+import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.MISSING_ISSUER;
+import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.TOKEN_EXCHANGE;
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.getTokenFromResources;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.endsWith;
@@ -71,6 +81,7 @@ class EnrichmentServiceTest {
   private final String EXAMPLE_COMPOSITION_ID = "d95529ba-0d70-426f-8f77-7606f168268e";
   private final Provenance provenance = Instancio.create(Provenance.class);
   private final String TOKEN = getTokenFromResources(AUTHENTICATOR);
+  private final String EXCHANGED_TOKEN = getTokenFromResources(TOKEN_EXCHANGE);
   @Mock private GematikIdpStrategy gematikIdpStrategy;
   @Mock private CertificateStrategy certificateStrategy;
   @Mock private BundIdIdpStrategy bundIdIdpStrategy;
@@ -105,6 +116,14 @@ class EnrichmentServiceTest {
         .createProvenanceResource(anyMap(), endsWith(RPS_BUNDLE_COMPOSITION_ID));
   }
 
+  @Test
+  @DisplayName("Should select idp strategy with Token-Exchange-Token")
+  void shouldSelectAuthenticatorStrategyWithTokenExchangeToken() {
+    underTest.addContextInformation(EXAMPLE_COMPOSITION_ID, EXCHANGED_TOKEN);
+    verify(gematikIdpStrategy)
+        .createProvenanceResource(anyMap(), endsWith(RPS_BUNDLE_COMPOSITION_ID));
+  }
+
   @ParameterizedTest(name = "Type: {0}-token")
   @EnumSource(
       value = TokenType.class,
@@ -114,5 +133,38 @@ class EnrichmentServiceTest {
     underTest.addContextInformation(EXAMPLE_COMPOSITION_ID, getTokenFromResources(tokenType));
     verify(bundIdIdpStrategy)
         .createProvenanceResource(anyMap(), endsWith(RPS_BUNDLE_COMPOSITION_ID));
+  }
+
+  @Test
+  void shouldThrowExceptionIfIssuerNotPresent() {
+    String tokenWithoutAccountSource = getTokenFromResources(MISSING_ISSUER);
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                underTest.addContextInformation(EXAMPLE_COMPOSITION_ID, tokenWithoutAccountSource));
+    assertThat(ex.getMessage()).isEqualTo("Missing or null value for claim: iss");
+  }
+
+  @Test
+  void shouldThrowExceptionIfIssuerNotKnown() {
+    String tokenWithoutAccountSource = getTokenFromResources(INVALID_ISSUER);
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                underTest.addContextInformation(EXAMPLE_COMPOSITION_ID, tokenWithoutAccountSource));
+    assertThat(ex.getMessage()).isEqualTo("Unknown token issuer: NOT_EXSISTING");
+  }
+
+  @Test
+  void shouldThrowExceptionIfAccountSourceNull() {
+    String tokenWithoutAccountSource = getTokenFromResources(MISSING_ACCOUNT_SOURCE);
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                underTest.addContextInformation(EXAMPLE_COMPOSITION_ID, tokenWithoutAccountSource));
+    assertThat(ex.getMessage()).isEqualTo("Missing or null value for claim: accountSource");
   }
 }

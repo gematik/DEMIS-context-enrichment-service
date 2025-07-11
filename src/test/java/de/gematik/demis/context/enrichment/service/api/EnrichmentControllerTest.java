@@ -19,6 +19,10 @@ package de.gematik.demis.context.enrichment.service.api;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
@@ -40,8 +44,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(value = EnrichmentController.class)
@@ -49,8 +53,8 @@ class EnrichmentControllerTest {
 
   private static final String CONTENT_HELLO_WORLD = "{\"Hello\": \"World\"}";
   @Autowired protected MockMvc mockMvc;
-  @MockBean private EnrichmentService enrichmentService;
-  @MockBean private FhirParser fhirParser;
+  @MockitoBean private EnrichmentService enrichmentService;
+  @MockitoBean private FhirParser fhirParser;
 
   @BeforeEach
   void setUp() {

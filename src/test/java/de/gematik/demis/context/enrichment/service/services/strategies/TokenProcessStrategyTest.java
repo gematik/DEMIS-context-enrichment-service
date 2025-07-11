@@ -37,6 +37,10 @@ package de.gematik.demis.context.enrichment.service.services.strategies;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
@@ -51,6 +55,7 @@ import static org.hl7.fhir.r4.model.Provenance.ProvenanceEntityRole.SOURCE;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.gematik.demis.context.enrichment.service.exceptions.CesServiceException;
 import de.gematik.demis.context.enrichment.service.utils.TestJwtCreator;
 import de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum;
 import java.util.Map;
@@ -105,9 +110,9 @@ class TokenProcessStrategyTest {
     for (TokenClaimsEnum claim : underTest.getNeededClaims()) {
       Map<String, Object> claims = new TestJwtCreator().removeClaim(claim.getName()).createClaims();
 
-      IllegalArgumentException ex =
+      CesServiceException ex =
           assertThrows(
-              IllegalArgumentException.class,
+              CesServiceException.class,
               () -> underTest.createProvenanceResource(claims, COMPOSITION_ID));
       assertThat(ex.getMessage()).isEqualTo("Missing values for claims: [" + claim + "]");
     }

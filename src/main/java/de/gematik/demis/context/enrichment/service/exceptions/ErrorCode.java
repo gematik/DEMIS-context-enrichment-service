@@ -36,6 +36,10 @@ package de.gematik.demis.context.enrichment.service.exceptions;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
@@ -46,7 +50,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 @Getter
 public enum ErrorCode {
-  INVALID_COMPOSITION_ID(HttpStatus.BAD_REQUEST);
+  INVALID_COMPOSITION_ID(HttpStatus.BAD_REQUEST),
+  MISSING_CLAIMS(HttpStatus.BAD_REQUEST);
 
   private final HttpStatus httpStatus;
 

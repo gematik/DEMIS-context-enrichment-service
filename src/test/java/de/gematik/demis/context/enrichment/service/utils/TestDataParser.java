@@ -37,6 +37,10 @@ package de.gematik.demis.context.enrichment.service.utils;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
@@ -74,20 +78,28 @@ public class TestDataParser {
     String path =
         switch (type) {
           case AUTHENTICATOR -> "src/test/resources/tokens/authenticatorToken.txt";
+          case TOKEN_EXCHANGE -> "src/test/resources/tokens/tokenExchangeToken.txt";
           case LAB -> "src/test/resources/tokens/labToken.txt";
           case HOSPITAL -> "src/test/resources/tokens/hospitalToken.txt";
           case BUNDID_ID -> "src/test/resources/tokens/bundIdPersoToken.txt";
           case BUNDID_USERNAME_PASSWORD ->
               "src/test/resources/tokens/bundIdUsernamePasswordToken.txt";
+          case MISSING_ACCOUNT_SOURCE -> "src/test/resources/tokens/missingAccountSourceToken.txt";
+          case INVALID_ISSUER -> "src/test/resources/tokens/invalidIssuer.txt";
+          case MISSING_ISSUER -> "src/test/resources/tokens/missingIssuer.txt";
         };
     return FileUtils.readFileToString(new File(path), UTF_8);
   }
 
   public enum TokenType {
     AUTHENTICATOR,
+    TOKEN_EXCHANGE,
     LAB,
     HOSPITAL,
     BUNDID_ID,
-    BUNDID_USERNAME_PASSWORD
+    BUNDID_USERNAME_PASSWORD,
+    MISSING_ACCOUNT_SOURCE,
+    MISSING_ISSUER,
+    INVALID_ISSUER
   }
 }

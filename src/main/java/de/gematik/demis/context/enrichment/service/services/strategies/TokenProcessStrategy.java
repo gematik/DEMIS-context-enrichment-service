@@ -37,13 +37,19 @@ package de.gematik.demis.context.enrichment.service.services.strategies;
  * In case of changes by gematik find details in the "Readme" file.
  *
  * See the Licence for the specific language governing permissions and limitations under the Licence.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  * #L%
  */
 
+import static de.gematik.demis.context.enrichment.service.exceptions.ErrorCode.MISSING_CLAIMS;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.AZP;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static org.hl7.fhir.r4.model.Provenance.ProvenanceEntityRole.SOURCE;
 
+import de.gematik.demis.context.enrichment.service.exceptions.CesServiceException;
 import de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum;
 import de.gematik.demis.context.enrichment.service.utils.fhir.ProvenanceBuilder;
 import java.util.List;
@@ -89,7 +95,7 @@ public abstract class TokenProcessStrategy {
                         || isBlank(claims.get(claim.getName()).toString()))
             .toList();
     if (!missingClaims.isEmpty()) {
-      throw new IllegalArgumentException("Missing values for claims: " + missingClaims.toString());
+      throw new CesServiceException(MISSING_CLAIMS, "Missing values for claims: " + missingClaims);
     }
   }
 

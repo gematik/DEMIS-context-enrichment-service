@@ -67,11 +67,11 @@ public class JwtUtils {
     String s = token.split("\\.")[1];
 
     try {
-      return mapper.readValue(new String(Base64.getDecoder().decode(s)), Map.class);
+      return mapper.readValue(new String(Base64.getUrlDecoder().decode(s)), Map.class);
     } catch (IllegalArgumentException e) {
-      log.error("Error while decoding token-payload: '{}' - trying other Decoder", s);
+      log.warn("Error while decoding token-payload: '{}' - trying other Decoder", s);
       try {
-        return mapper.readValue(new String(Base64.getUrlDecoder().decode(s)), Map.class);
+        return mapper.readValue(new String(Base64.getDecoder().decode(s)), Map.class);
       } catch (IllegalArgumentException ex) {
         log.error("Other attempt to decode token-payload failed as well");
         throw ex;

@@ -45,6 +45,7 @@ package de.gematik.demis.context.enrichment.service.services.strategies;
  */
 
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.getTokenClaimsFromResources;
+import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_SOURCE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_TYPE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.SUB;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.USERNAME;
@@ -60,17 +61,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class BundIdIdpStrategyTest {
+class OzgStrategyTest {
 
-  private BundIdIdpStrategy underTest = new BundIdIdpStrategy();
+  private OzgStrategy underTest = new OzgStrategy();
 
   public static Stream<Arguments> shouldCreateAgentCorrectly() {
     return Stream.of(
-        Arguments.of("Perso", getTokenClaimsFromResources(TokenType.BUNDID_ID), "high"),
         Arguments.of(
-            "UsernamePassword",
+            "BundID_Certificate", getTokenClaimsFromResources(TokenType.BUNDID_ID), "substantial"),
+        Arguments.of(
+            "BundID_Username_Password",
             getTokenClaimsFromResources(TokenType.BUNDID_USERNAME_PASSWORD),
-            "low"));
+            "low"),
+        Arguments.of(
+            "MeinUnternehmenskonto",
+            getTokenClaimsFromResources(TokenType.MEIN_UNTERNEHMENSKONTO),
+            "substantial"));
   }
 
   @ParameterizedTest(name = "Type: {0}-token")
@@ -95,9 +101,19 @@ class BundIdIdpStrategyTest {
                 .isEqualTo("urn:uuid:" + tokenClaims.get(SUB.getName())),
         () ->
             assertThat(agent.getOnBehalfOf().getIdentifier().getSystem())
-                .isEqualTo("https://demis.rki.de/fhir/sid/BundIdBPK2"),
+                .isEqualTo(
+                    determineAccountIdentifierSystem(
+                        tokenClaims.get(ACCOUNT_SOURCE.getName()).toString())),
         () ->
             assertThat(agent.getOnBehalfOf().getIdentifier().getValue())
                 .isEqualTo(tokenClaims.get(USERNAME.getName())));
+  }
+
+  private String determineAccountIdentifierSystem(String accountSource) {
+    return switch (accountSource) {
+      case "bundid" -> "https://demis.rki.de/fhir/sid/BundIdBPK2";
+      case "muk" -> "https://demis.rki.de/fhir/NamingSystem/MUK";
+      default -> throw new IllegalArgumentException("Unknown account source: " + accountSource);
+    };
   }
 }

@@ -48,13 +48,14 @@ import static de.gematik.demis.context.enrichment.service.services.EnrichmentSer
 import static de.gematik.demis.context.enrichment.service.services.EnrichmentService.AccessTokenType.BUNDID_TOKEN;
 import static de.gematik.demis.context.enrichment.service.services.EnrichmentService.AccessTokenType.HOSPITAL_TOKEN;
 import static de.gematik.demis.context.enrichment.service.services.EnrichmentService.AccessTokenType.LAB_TOKEN;
+import static de.gematik.demis.context.enrichment.service.services.EnrichmentService.AccessTokenType.MUK_TOKEN;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_SOURCE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ISS;
 
 import com.apicatalog.jsonld.StringUtils;
-import de.gematik.demis.context.enrichment.service.services.strategies.BundIdIdpStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.CertificateStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.GematikIdpStrategy;
+import de.gematik.demis.context.enrichment.service.services.strategies.OzgStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.TokenProcessStrategy;
 import de.gematik.demis.context.enrichment.service.utils.JwtUtils;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class EnrichmentService {
   public static final String LAB_REAM_NAME = "LAB";
   private final GematikIdpStrategy gematikIdpStrategy;
   private final CertificateStrategy certificateStrategy;
-  private final BundIdIdpStrategy bundIdIdpStrategy;
+  private final OzgStrategy ozgStrategy;
 
   /**
    * Create provenance resource from token
@@ -88,7 +89,8 @@ public class EnrichmentService {
         switch (getTypeOfToken(claims)) {
           case AUTHENTICATOR_TOKEN -> gematikIdpStrategy;
           case HOSPITAL_TOKEN, LAB_TOKEN -> certificateStrategy;
-          case BUNDID_TOKEN -> bundIdIdpStrategy;
+          case BUNDID_TOKEN -> ozgStrategy;
+          case MUK_TOKEN -> ozgStrategy;
         };
     return strategy.createProvenanceResource(claims, compositionId);
   }
@@ -113,7 +115,14 @@ public class EnrichmentService {
       throw new IllegalArgumentException(
           "Missing or null value for claim: " + ACCOUNT_SOURCE.getName());
     }
-    return accountSource.equals("gematik") ? AUTHENTICATOR_TOKEN : BUNDID_TOKEN;
+    return switch (accountSource) {
+      case "gematik" -> AUTHENTICATOR_TOKEN;
+      case "bundid" -> BUNDID_TOKEN;
+      case "muk" -> MUK_TOKEN;
+      default ->
+          throw new IllegalArgumentException(
+              "Unknown account source in portal realm: " + accountSource);
+    };
   }
 
   private static boolean checkIssuerIsPresent(Map<String, Object> claims) {
@@ -131,6 +140,7 @@ public class EnrichmentService {
     AUTHENTICATOR_TOKEN,
     HOSPITAL_TOKEN,
     LAB_TOKEN,
-    BUNDID_TOKEN
+    BUNDID_TOKEN,
+    MUK_TOKEN
   }
 }

@@ -44,6 +44,7 @@ package de.gematik.demis.context.enrichment.service.services.strategies;
  * #L%
  */
 
+import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_IDENTIFIER;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_SOURCE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_TYPE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.LEVEL_OF_ASSURANCE;
@@ -59,7 +60,7 @@ import org.springframework.stereotype.Service;
 
 /** Service used to create Provenance resource */
 @Service
-public class BundIdIdpStrategy extends TokenProcessStrategy {
+public class OzgStrategy extends TokenProcessStrategy {
 
   @Override
   List<TokenClaimsEnum> getNeededClaims() {
@@ -74,7 +75,12 @@ public class BundIdIdpStrategy extends TokenProcessStrategy {
     agentBuilder.setAccountType(claims.get(ACCOUNT_TYPE.getName()).toString());
     agentBuilder.setKeycloakUserId(claims.get(SUB.getName()).toString());
     agentBuilder.setUserName(claims.get(USERNAME.getName()).toString());
-    agentBuilder.setAccountIdentifierSystem(BUNDID_IDENTIFIER);
+    agentBuilder.setAccountIdentifierSystem(
+        determineAccountIdentifierSystem(claims.get(ACCOUNT_IDENTIFIER.getName()).toString()));
     return agentBuilder.build();
+  }
+
+  private String determineAccountIdentifierSystem(String accountIdentifier) {
+    return accountIdentifier.substring(0, accountIdentifier.indexOf('|'));
   }
 }

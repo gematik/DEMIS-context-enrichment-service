@@ -49,6 +49,7 @@ import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.T
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.BUNDID_USERNAME_PASSWORD;
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.HOSPITAL;
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.LAB;
+import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType.MEIN_UNTERNEHMENSKONTO;
 import static de.gematik.demis.context.enrichment.service.utils.TestDataParser.getTokenClaimsFromResources;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hl7.fhir.r4.model.Provenance.ProvenanceEntityRole.SOURCE;
@@ -78,11 +79,15 @@ class TokenProcessStrategyTest {
         Arguments.of(
             "authenticator", new GematikIdpStrategy(), getTokenClaimsFromResources(AUTHENTICATOR)),
         Arguments.of(
-            "bundId_Perso", new BundIdIdpStrategy(), getTokenClaimsFromResources(BUNDID_ID)),
+            "BundID_Certificate", new OzgStrategy(), getTokenClaimsFromResources(BUNDID_ID)),
         Arguments.of(
-            "bundId_UsernamePassword",
-            new BundIdIdpStrategy(),
-            getTokenClaimsFromResources(BUNDID_USERNAME_PASSWORD)));
+            "BundID_Username_Password",
+            new OzgStrategy(),
+            getTokenClaimsFromResources(BUNDID_USERNAME_PASSWORD)),
+        Arguments.of(
+            "MeinUnternehmenskonto",
+            new OzgStrategy(),
+            getTokenClaimsFromResources(MEIN_UNTERNEHMENSKONTO)));
   }
 
   @MethodSource("getStrategies")

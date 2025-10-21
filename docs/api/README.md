@@ -7,7 +7,7 @@ All URIs are relative to *http://localhost*
 
 | Class | Method | HTTP request | Description |
 |------------ | ------------- | ------------- | -------------|
-| *EnrichmentControllerApi* | [**enrichBundle**](Apis/EnrichmentControllerApi.md#enrichbundle) | **POST** /enrichment |  |
+| *EnrichmentControllerApi* | [**enrichBundle**](Apis/EnrichmentControllerApi.md#enrichBundle) | **POST** /enrichment |  |
 
 
 <a name="documentation-for-models"></a>

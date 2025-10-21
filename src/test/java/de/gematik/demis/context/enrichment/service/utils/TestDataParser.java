@@ -81,9 +81,10 @@ public class TestDataParser {
           case TOKEN_EXCHANGE -> "src/test/resources/tokens/tokenExchangeToken.txt";
           case LAB -> "src/test/resources/tokens/labToken.txt";
           case HOSPITAL -> "src/test/resources/tokens/hospitalToken.txt";
-          case BUNDID_ID -> "src/test/resources/tokens/bundIdPersoToken.txt";
+          case BUNDID_ID -> "src/test/resources/tokens/bundIdCertificateToken.txt";
           case BUNDID_USERNAME_PASSWORD ->
               "src/test/resources/tokens/bundIdUsernamePasswordToken.txt";
+          case MEIN_UNTERNEHMENSKONTO -> "src/test/resources/tokens/mukToken.txt";
           case MISSING_ACCOUNT_SOURCE -> "src/test/resources/tokens/missingAccountSourceToken.txt";
           case INVALID_ISSUER -> "src/test/resources/tokens/invalidIssuer.txt";
           case MISSING_ISSUER -> "src/test/resources/tokens/missingIssuer.txt";
@@ -98,6 +99,7 @@ public class TestDataParser {
     HOSPITAL,
     BUNDID_ID,
     BUNDID_USERNAME_PASSWORD,
+    MEIN_UNTERNEHMENSKONTO,
     MISSING_ACCOUNT_SOURCE,
     MISSING_ISSUER,
     INVALID_ISSUER

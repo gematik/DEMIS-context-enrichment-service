@@ -59,9 +59,9 @@ import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
-import de.gematik.demis.context.enrichment.service.services.strategies.BundIdIdpStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.CertificateStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.GematikIdpStrategy;
+import de.gematik.demis.context.enrichment.service.services.strategies.OzgStrategy;
 import de.gematik.demis.context.enrichment.service.utils.TestDataParser.TokenType;
 import org.hl7.fhir.r4.model.Provenance;
 import org.instancio.Instancio;
@@ -84,7 +84,7 @@ class EnrichmentServiceTest {
   private final String EXCHANGED_TOKEN = getTokenFromResources(TOKEN_EXCHANGE);
   @Mock private GematikIdpStrategy gematikIdpStrategy;
   @Mock private CertificateStrategy certificateStrategy;
-  @Mock private BundIdIdpStrategy bundIdIdpStrategy;
+  @Mock private OzgStrategy ozgStrategy;
   @InjectMocks private EnrichmentService underTest;
 
   @BeforeEach
@@ -127,12 +127,11 @@ class EnrichmentServiceTest {
   @ParameterizedTest(name = "Type: {0}-token")
   @EnumSource(
       value = TokenType.class,
-      names = {"BUNDID_ID", "BUNDID_USERNAME_PASSWORD"})
-  @DisplayName("Should select bundId strategy with perso / username-password token")
-  void shouldSelectBundIdStrategy(TokenType tokenType) {
+      names = {"BUNDID_ID", "BUNDID_USERNAME_PASSWORD", "MEIN_UNTERNEHMENSKONTO"})
+  @DisplayName("Should select OZG strategy with BundID and MeinUnternehmenskonto token")
+  void shouldSelectOzgStrategy(TokenType tokenType) {
     underTest.addContextInformation(EXAMPLE_COMPOSITION_ID, getTokenFromResources(tokenType));
-    verify(bundIdIdpStrategy)
-        .createProvenanceResource(anyMap(), endsWith(RPS_BUNDLE_COMPOSITION_ID));
+    verify(ozgStrategy).createProvenanceResource(anyMap(), endsWith(RPS_BUNDLE_COMPOSITION_ID));
   }
 
   @Test

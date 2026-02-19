@@ -6,6 +6,7 @@
 - dependencies updated
 - try to decode token with url encoding first
 - changed loglevel for token decoding to warn
+- updated Base Image
 
 ## Release 1.1.1
 - No value checks for compositionId for uuid anymore

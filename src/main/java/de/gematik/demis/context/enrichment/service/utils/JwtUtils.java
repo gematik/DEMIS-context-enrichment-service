@@ -47,20 +47,21 @@ package de.gematik.demis.context.enrichment.service.utils;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
 import java.util.Map;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @NoArgsConstructor(access = PRIVATE)
 public class JwtUtils {
 
-  private static ObjectMapper mapper = new ObjectMapper();
+  private static final JsonMapper mapper = new JsonMapper();
+  private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE =
+      new TypeReference<>() {};
 
-  @SneakyThrows
   public static Map<String, Object> getClaimMap(String token) {
     if (token.startsWith("Bearer ")) {
       token = token.replace("Bearer ", "");
@@ -68,11 +69,11 @@ public class JwtUtils {
     String s = token.split("\\.")[1];
 
     try {
-      return mapper.readValue(new String(Base64.getUrlDecoder().decode(s)), Map.class);
+      return mapper.readValue(new String(Base64.getUrlDecoder().decode(s)), MAP_TYPE_REFERENCE);
     } catch (IllegalArgumentException e) {
       log.warn("Error while decoding token-payload: '{}' - trying other Decoder", s);
       try {
-        return mapper.readValue(new String(Base64.getDecoder().decode(s)), Map.class);
+        return mapper.readValue(new String(Base64.getDecoder().decode(s)), MAP_TYPE_REFERENCE);
       } catch (IllegalArgumentException ex) {
         log.error("Other attempt to decode token-payload failed as well");
         throw ex;

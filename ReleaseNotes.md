@@ -1,6 +1,13 @@
 <img align="right" alt="gematik" width="250" height="47" src="media/Gematik_Logo_Flag.png"/> <br/>    
 
 # Release Notes CES-Service
+## Release 1.2.0 
+- updated base-image and updated from java 21 to java 25
+- Removed istio helm chart
+- Upgraded to spring-boot 4
+
+## Release 1.1.3
+- updated base image
 
 ## Release 1.1.2
 - dependencies updated

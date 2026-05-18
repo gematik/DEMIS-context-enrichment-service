@@ -47,12 +47,12 @@ package de.gematik.demis.context.enrichment.service.utils;
 
 import static java.util.Base64.getEncoder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import tools.jackson.databind.json.JsonMapper;
 
 @Getter
 public class TestJwtCreator {
@@ -129,7 +129,7 @@ public class TestJwtCreator {
 
   @SneakyThrows
   public String createToken() {
-    ObjectMapper mapper = new ObjectMapper();
+    JsonMapper mapper = new JsonMapper();
     String baseHeader =
         new String(getEncoder().encode(mapper.writeValueAsString(header).getBytes()));
     String payload = new String(getEncoder().encode(mapper.writeValueAsString(claims).getBytes()));

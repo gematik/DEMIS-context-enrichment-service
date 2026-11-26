@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 debug:
   enable: false
+  params: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000"
 
 # Number of Pod Replicas desired
 replicaCount: 2
@@ -28,11 +29,14 @@ customLabels: {}
 # Extra labels for deployments
 deploymentLabels: {}
 
-# Define custom Container Entrypoint and Arguments (e.g. JVM Tuning)
+customEnvVars:
+  JAVA_TOOL_OPTIONS: "-XX:ActiveProcessorCount=2 -XX:MaxRAMPercentage=25.0 -XX:MaxMetaspaceSize=128m -XX:+UseG1GC"
+  TZ: "Europe/Berlin"
+
 # If not given, the Entrypoint defined in Dockerfile will be used
 application:
-  entrypoint: ["java"]
-  parameters: ["-XX:ActiveProcessorCount=2", "-XX:MaxRAMPercentage=95.0", "-XX:+TieredCompilation", "-XX:+UseG1GC", "-jar", "-Xmx1G", "/app.jar"]
+  entrypoint: []
+  parameters: []
 
 # Define Image Pull Secrets if using private registry
 imagePullSecrets: []
@@ -103,10 +107,10 @@ service:
 # Resources
 resources:
   limits:
-    memory: "500Mi"
+    memory: "350Mi"
   requests:
     cpu: "50m"
-    memory: "500Mi"
+    memory: "350Mi"
 
 autoscaling:
   enabled: false

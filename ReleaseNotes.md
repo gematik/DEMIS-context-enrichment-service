@@ -1,6 +1,15 @@
 <img align="right" alt="gematik" width="250" height="47" src="media/Gematik_Logo_Flag.png"/> <br/>    
 
 # Release Notes CES-Service
+## Release 1.2.1
+- optimized custom environment variables handling in helm chart
+- updated docker base image to gematik1/osadl-alpine-openjdk25-jre:1.1.5
+- arranged jvm options and resource limits
+- fixed handling of falsy custom environment variables (false, 0) in helm chart
+- added vex-documents to repository
+- updated spring-parent to 4.1.11
+- Updated minor/patch versions of dependencies
+
 ## Release 1.2.0 
 - updated base-image and updated from java 21 to java 25
 - Removed istio helm chart

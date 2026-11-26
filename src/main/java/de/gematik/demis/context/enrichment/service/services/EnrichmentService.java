@@ -53,7 +53,6 @@ import static de.gematik.demis.context.enrichment.service.services.EnrichmentSer
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ACCOUNT_SOURCE;
 import static de.gematik.demis.context.enrichment.service.utils.enums.TokenClaimsEnum.ISS;
 
-import com.apicatalog.jsonld.StringUtils;
 import de.gematik.demis.context.enrichment.service.services.strategies.CertificateStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.GematikIdpStrategy;
 import de.gematik.demis.context.enrichment.service.services.strategies.OzgStrategy;
@@ -61,6 +60,7 @@ import de.gematik.demis.context.enrichment.service.services.strategies.TokenProc
 import de.gematik.demis.context.enrichment.service.utils.JwtUtils;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Provenance;
 import org.springframework.stereotype.Service;
 
